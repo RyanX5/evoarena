@@ -17,3 +17,7 @@ SCALE = 1.0
 
 # ── Reproducibility ──────────────────────────────────────────────────────────
 RANDOM_SEED = 42
+
+# Attack
+ATTACK_RANGE = 25
+ATTACK_DMG = 2

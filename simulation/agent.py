@@ -6,6 +6,7 @@ Represents a single agent in the arena.
 
 import numpy as np
 from simulation.neural_network import NeuralNetwork
+import config
 
 AGENT_RADIUS = 10
 MAX_HEALTH   = 100.0
@@ -26,6 +27,9 @@ class Agent:
 
         self.health = MAX_HEALTH
         self.alive = True
+        self.damage_dealt = 0.0
+        self.kills = 0
+        self.steps_alive = 0
 
         # Brain is initialized but not yet used for decisions
         self.brain = brain if brain is not None else NeuralNetwork()
@@ -133,6 +137,22 @@ class Agent:
         if self.y > arena_height - AGENT_RADIUS:
             self.y = arena_height - AGENT_RADIUS
             self.vy *= -1
+
+    def attack(self, agents: list):
+        enemies = [a for a in agents if a is not self and a.alive]
+        in_range = [a for a in enemies if np.sqrt((a.x - self.x)**2 + (a.y - self.y)**2) <= config.ATTACK_RANGE]
+
+        for enemy in in_range:
+            enemy.take_damage(config.ATTACK_DMG)
+            self.damage_dealt += config.ATTACK_DMG
+
+
+    def take_damage(self, amount: float):
+        self.health -= amount
+        if self.health <= 0:
+            self.health = 0
+            self.alive = False
+
 
     def __repr__(self):
         return f"Agent(id={self.id}, pos=({self.x:.0f},{self.y:.0f}))"

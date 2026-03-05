@@ -64,11 +64,25 @@ class Visualizer:
 
         # Agents
         for agent in self.arena.agents:
+
+            # For healthbar
+            bar_width = 20
+            bar_height = 4
+            bar_x = int(agent.x) - bar_width // 2
+            bar_y = int(agent.y) - AGENT_RADIUS - 8
+            bar_color = (180, 0, 0) # Red
+            bar_fill_color = (0, 200, 0) # Green
+
             cx, cy = int(agent.x), int(agent.y)
             pygame.draw.circle(self.screen, AGENT_COLOR, (cx, cy), AGENT_RADIUS)
             pygame.draw.circle(self.screen, AGENT_OUTLINE, (cx, cy), AGENT_RADIUS, 1)
+            pygame.draw.rect(self.screen, bar_color, (bar_x, bar_y, bar_width, bar_height))
             label = self.small_font.render(str(agent.id), True, (20, 20, 20))
             self.screen.blit(label, (cx - 4, cy - 5))
+
+            # health bar fill with green
+            fill_width = int(bar_width * (agent.health/MAX_HEALTH))
+            pygame.draw.rect(self.screen, bar_fill_color, (bar_x, bar_y, fill_width, bar_height))
 
         # HUD
         hud_y = self.arena.height + 8

@@ -60,4 +60,12 @@ class Arena:
         for agent in self.agents:
             agent.decide(self.agents, self.width, self.height)
             agent.move(self.width, self.height)
+
+        for agent in self.agents:
+            if agent.alive:
+                agent.attack(self.agents)
+        
+        # Updating self.agents every step to remove dead agents
+        self.agents = [a for a in self.agents if a.alive]
+        
         self.step_count += 1
