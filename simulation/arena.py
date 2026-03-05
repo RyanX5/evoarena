@@ -2,16 +2,6 @@
 arena.py
 The 2D simulation environment.
 
-Current state (Report 1):
-    - Bounded arena with static obstacles
-    - Spawns agents at random positions
-    - Runs a step loop (agents wander randomly)
-
-Planned:
-    - Obstacle collision resolution
-    - Combat resolution
-    - Round end conditions
-    - Fitness evaluation
 """
 
 import numpy as np
@@ -68,6 +58,6 @@ class Arena:
     def step(self):
         """Advance simulation by one time step."""
         for agent in self.agents:
-            agent.wander(self.rng)
+            agent.decide(self.agents, self.width, self.height)
             agent.move(self.width, self.height)
         self.step_count += 1

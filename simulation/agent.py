@@ -2,15 +2,6 @@
 agent.py
 Represents a single agent in the arena.
 
-Current state (Report 1):
-    - Position, velocity, health
-    - Random wandering movement (neural network control planned for Report 2)
-    - No combat yet (planned for Report 2)
-
-Planned:
-    - Neural-network-driven decisions
-    - Combat mechanics (attack, damage, death)
-    - Fitness scoring
 """
 
 import numpy as np
@@ -53,6 +44,76 @@ class Agent:
         if speed > MAX_SPEED:
             self.vx = (self.vx / speed) * MAX_SPEED
             self.vy = (self.vy / speed) * MAX_SPEED
+
+    def decide(self, agents: list, arena_width: int, arena_height: int):
+        """
+        Builds an 8-input vector and passes to the NN with forward()
+        The 8-input vector is defined in neural_network.py
+        """
+
+        input_vector = []
+        max_dist = np.sqrt(arena_width**2 + arena_height**2)
+
+        # First, finding the nearest enemy and the distance
+        enemies = [a for a in agents if a is not self and a.alive]
+        nearest = None
+        nearest_dist = float('inf')
+
+        for enemy in enemies:
+            d = np.sqrt((enemy.x - self.x)**2 + (enemy.y - self.y)**2)
+            if d < nearest_dist:
+                nearest_dist = d
+                nearest = enemy
+
+        if nearest is None:
+            inputs = np.zeros(8)
+            inputs[7] = 1.0
+            outputs = self.brain.forward(inputs)
+            self.vx = float(outputs[0]) * MAX_SPEED
+            self.vy = float(outputs[1]) * MAX_SPEED
+            return
+        
+        input_vector.append(nearest_dist/max_dist)
+
+        # Now calculate the angle with the nearest enemy
+        nearest_angle = np.arctan2(nearest.y - self.y, nearest.x - self.x)
+        input_vector.append(nearest_angle/np.pi)
+
+        # Get own health
+        own_health = self.health / MAX_HEALTH
+        input_vector.append(own_health)
+
+        # Get enemy health
+        nearest_health = nearest.health / MAX_HEALTH
+        input_vector.append(nearest_health)
+
+        # Distance to nearest wall
+        nearest_wall_dist = min(self.x, arena_width - self.x, self.y, arena_height - self.y)
+        input_vector.append(nearest_wall_dist/max_dist)
+
+        # Velocity x
+        vel_x = self.vx
+        input_vector.append(vel_x/MAX_SPEED)
+
+        # Velocity y 
+        vel_y = self.vy
+        input_vector.append(vel_y/MAX_SPEED)
+
+        # bias
+        bias = 1.0
+        input_vector.append(bias)
+
+        # Now doing the forward pass, and getting output
+        inputs = np.array(input_vector)
+        outputs = self.brain.forward(inputs=inputs)
+
+        # Now setting the dy and dv according to the NN output
+        self.vx = float(outputs[0] * MAX_SPEED)
+        self.vy = float(outputs[1] * MAX_SPEED)
+
+        # TODO: outputs[2] = attack intent (unused until combat is implemented)
+        # TODO: outputs[3] = flee mode (unused until combat is implemented)
+
 
     def move(self, arena_width: int, arena_height: int):
         """Apply velocity and bounce off arena walls."""

@@ -1,12 +1,9 @@
 """
 main.py
-EvoArena entry point — Report 1 demo.
 
-Launches the arena with randomly wandering agents.
-No evolution or combat yet — this demonstrates the foundation:
-    - Arena environment with obstacles
-    - Agent spawning and movement
-    - Real-time Pygame visualization
+Launches the arena with randomly spawned agents.
+Each agent has their own NN (brain).
+One every step (arena.step), it does a forward pass and recalculates vx and vy for each agent
 
 Run with:
     python main.py
