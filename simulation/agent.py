@@ -146,12 +146,26 @@ class Agent:
             enemy.take_damage(config.ATTACK_DMG)
             self.damage_dealt += config.ATTACK_DMG
 
+            # track kills for self
+            if not enemy.alive:
+                self.kills += 1
+
 
     def take_damage(self, amount: float):
         self.health -= amount
         if self.health <= 0:
             self.health = 0
             self.alive = False
+
+    
+    def fitness(self) -> float:
+        """
+        Returns the fitness score using weigted sum formula
+
+        w_dmg, w_kills, w_steps = 2.0, 50.0, 1.0
+        """
+        w_dmg, w_kills, w_steps = 2.0, 50.0, 1.0
+        return (self.damage_dealt * w_dmg + self.kills * w_kills + self.steps_alive * w_steps)
 
 
     def __repr__(self):

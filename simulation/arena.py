@@ -61,11 +61,16 @@ class Arena:
             agent.decide(self.agents, self.width, self.height)
             agent.move(self.width, self.height)
 
+        # Adding steps_alive to track fitness score
+        for agent in self.agents:
+            agent.steps_alive += 1
+
         for agent in self.agents:
             if agent.alive:
                 agent.attack(self.agents)
         
         # Updating self.agents every step to remove dead agents
         self.agents = [a for a in self.agents if a.alive]
-        
+
+
         self.step_count += 1

@@ -93,4 +93,12 @@ class Visualizer:
         self.clock.tick(self.fps)
 
     def close(self):
+        max_fitness_score = 0.0
+        max_score_agent = None
+        for agent in self.arena.agents:
+            curr_fitness = agent.fitness()
+            if curr_fitness > max_fitness_score:
+                max_fitness_score = curr_fitness
+                max_score_agent = agent
+        print(f"Max fitness score: {max_fitness_score} by Agent id: {max_score_agent.id}")
         pygame.quit()
