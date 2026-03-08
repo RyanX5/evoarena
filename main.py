@@ -17,6 +17,7 @@ import config
 from simulation.arena import Arena
 from simulation.agent import Agent
 from visualization.visualizer import Visualizer
+from evolution.evolve import next_generation
 
 
 def main():
@@ -25,23 +26,37 @@ def main():
     print(f"  Arena      : {config.ARENA_WIDTH}x{config.ARENA_HEIGHT}")
     print("  Press ESC or close window to quit.\n")
 
-    arena = Arena(width=config.ARENA_WIDTH, height=config.ARENA_HEIGHT)
-
+    
+    
     Agent._id_counter = 0
     agents = [Agent(0, 0) for _ in range(config.POPULATION_SIZE)]
-    arena.reset(agents)
 
-    viz = Visualizer(arena, fps=config.FPS)
+    arena = Arena(width=config.ARENA_WIDTH, height=config.ARENA_HEIGHT)
+    arena.reset(agents)
+    viz = Visualizer(arena=arena, fps=config.FPS)
     viz.init()
 
-    while True:
-        if viz.should_quit():
-            break
-        arena.step()
-        viz.draw()
+    generation = 0
 
-    viz.close()
-    print("Done.")
+    while True:
+        generation += 1
+        print(f"Generation: {generation}")
+        arena = Arena(width=config.ARENA_WIDTH, height=config.ARENA_HEIGHT)
+        arena.reset(agents)
+        viz.arena = arena
+
+        while arena.step_count < config.GEN_SIZE and len(arena.agents) > 1:
+            if viz.should_quit():
+                viz.close()
+                print("Done.")
+                return
+            arena.step()
+            viz.draw()
+        
+        agents = next_generation(arena.agents)
+        Agent._id_counter = 0
+
+    
 
 
 if __name__ == "__main__":

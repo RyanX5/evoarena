@@ -10,6 +10,7 @@ ARENA_HEIGHT = 600
 
 # ── Population ────────────────────────────────────────────────────────────────
 POPULATION_SIZE = 10
+GEN_SIZE = 1000
 
 # ── Display ──────────────────────────────────────────────────────────────────
 FPS   = 60
@@ -21,3 +22,6 @@ RANDOM_SEED = 42
 # Attack
 ATTACK_RANGE = 25
 ATTACK_DMG = 2
+
+# Mutation
+MUTATION_RATE = 0.1
