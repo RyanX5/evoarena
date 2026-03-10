@@ -9,7 +9,7 @@ ARENA_WIDTH  = 800
 ARENA_HEIGHT = 600
 
 # ── Population ────────────────────────────────────────────────────────────────
-POPULATION_SIZE = 10
+POPULATION_SIZE = 30
 GEN_SIZE = 1000
 
 # ── Display ──────────────────────────────────────────────────────────────────
@@ -25,3 +25,6 @@ ATTACK_DMG = 2
 
 # Mutation
 MUTATION_RATE = 0.1
+
+# Penalties
+WALL_DISTANCE = 50

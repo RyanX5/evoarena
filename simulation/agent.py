@@ -30,6 +30,7 @@ class Agent:
         self.damage_dealt = 0.0
         self.kills = 0
         self.steps_alive = 0
+        self.steps_near_wall = 0
 
         # Brain is initialized but not yet used for decisions
         self.brain = brain if brain is not None else NeuralNetwork()
@@ -94,6 +95,14 @@ class Agent:
         # Distance to nearest wall
         nearest_wall_dist = min(self.x, arena_width - self.x, self.y, arena_height - self.y)
         input_vector.append(nearest_wall_dist/max_dist)
+
+        # Also add to fitness parameter steps_near_wall to penalize later
+        wall_dists = sorted([self.x, arena_width - self.x, self.y, arena_height - self.y])
+        corner_exposure = wall_dists[0] + wall_dists[1]
+        
+        # Now proportional to wall_distance
+        wall_penalty_score = max(0.0, 1.0 - (corner_exposure / (config.WALL_DISTANCE * 2)))
+        self.steps_near_wall += wall_penalty_score
 
         # Velocity x
         vel_x = self.vx
@@ -162,10 +171,15 @@ class Agent:
         """
         Returns the fitness score using weigted sum formula
 
-        w_dmg, w_kills, w_steps = 2.0, 50.0, 1.0
+        w_dmg, w_kills, w_steps, w_near_wall = 2.0, 150.0, 1.0, 1.0
         """
-        w_dmg, w_kills, w_steps = 2.0, 50.0, 1.0
-        return (self.damage_dealt * w_dmg + self.kills * w_kills + self.steps_alive * w_steps)
+        w_dmg, w_kills, w_steps, w_near_wall = 2.0, 150.0, 1.0, 2.0
+        return (
+            self.damage_dealt * w_dmg + 
+            self.kills * w_kills + 
+            self.steps_alive * w_steps - 
+            self.steps_near_wall * w_near_wall
+            )
 
 
     def __repr__(self):
