@@ -99,9 +99,11 @@ class Agent:
         # Also add to fitness parameter steps_near_wall to penalize later
         wall_dists = sorted([self.x, arena_width - self.x, self.y, arena_height - self.y])
         corner_exposure = wall_dists[0] + wall_dists[1]
-        
+
         # Now proportional to wall_distance
-        wall_penalty_score = max(0.0, 1.0 - (corner_exposure / (config.WALL_DISTANCE * 2)))
+        wall_penalty_score = 0.0
+        for d in [self.x, arena_width - self.x, self.y, arena_height - self.y]:
+            wall_penalty_score += max(0.0, 1.0 - (d / config.WALL_DISTANCE))
         self.steps_near_wall += wall_penalty_score
 
         # Velocity x
