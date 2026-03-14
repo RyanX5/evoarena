@@ -18,11 +18,13 @@ class Obstacle:
 
 
 class Arena:
+    _gen_count = 0
     def __init__(self, width: int = 800, height: int = 600):
         self.width = width
         self.height = height
         self.agents: list[Agent] = []
         self.step_count = 0
+        
         self.rng = np.random.default_rng()
 
         self.obstacles = [

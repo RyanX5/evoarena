@@ -86,7 +86,7 @@ class Visualizer:
 
         # HUD
         hud_y = self.arena.height + 8
-        hud = f"Step: {self.arena.step_count}   Agents: {len(self.arena.agents)}"
+        hud = f"Step: {self.arena.step_count}   Agents: {len(self.arena.agents)}    Gen: {Arena._gen_count}"
         self.screen.blit(self.font.render(hud, True, HUD_COLOR), (10, hud_y))
 
         pygame.display.flip()

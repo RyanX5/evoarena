@@ -36,14 +36,15 @@ def main():
     viz = Visualizer(arena=arena, fps=config.FPS)
     viz.init()
 
-    generation = 0
+    
 
     while True:
-        generation += 1
-        print(f"Generation: {generation}")
+        
         arena = Arena(width=config.ARENA_WIDTH, height=config.ARENA_HEIGHT)
         arena.reset(agents)
         viz.arena = arena
+        Arena._gen_count += 1
+        print(f"Generation: {Arena._gen_count}")
 
         while arena.step_count < config.GEN_SIZE and len(arena.agents) > 1:
             if viz.should_quit():
