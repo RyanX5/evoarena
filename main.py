@@ -18,6 +18,7 @@ from simulation.arena import Arena
 from simulation.agent import Agent
 from visualization.visualizer import Visualizer
 from evolution.evolve import next_generation
+from visualization.fitness_graph import FitnessGraph
 
 
 def main():
@@ -27,7 +28,10 @@ def main():
     print("  Press ESC or close window to quit.\n")
 
     
-    
+    best_fitness_history = []
+    avg_fitness_history = []
+    graph = FitnessGraph()
+
     Agent._id_counter = 0
     agents = [Agent(0, 0) for _ in range(config.POPULATION_SIZE)]
 
@@ -54,6 +58,14 @@ def main():
             arena.step()
             viz.draw()
         
+        # computing fitness scores for graph
+        best_fitness = max(a.fitness() for a in arena.agents)
+        avg_fitness = sum(a.fitness() for a in arena.agents) / len(arena.agents)
+
+        best_fitness_history.append(best_fitness)
+        avg_fitness_history.append(avg_fitness)
+        graph.update(best_fitness_history, avg_fitness_history)
+
         agents = next_generation(arena.agents)
         Agent._id_counter = 0
 
