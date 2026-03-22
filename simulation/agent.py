@@ -182,6 +182,43 @@ class Agent:
             self.steps_alive * w_steps - 
             self.steps_near_wall * w_near_wall
             )
+    
+    def handle_obstacles(self, obstacles: list):
+        """
+        Resolves collisions between the agent (circle) and arena obstacles (rectangles).
+        Uses AABB vs circle detection. finds closest point on rectangle to agent center,
+        checks overlap, pushes agent out and reflects velocity along the collision normal.
+        """
+        for obs in obstacles:
+            # Find closest point on rectangle to agent center
+            closest_x = max(obs.x, min(self.x, obs.x + obs.width))
+            closest_y = max(obs.y, min(self.y, obs.y + obs.height))
+
+            # Vector from closest point to agent center
+            dx = self.x - closest_x
+            dy = self.y - closest_y
+            distance = np.sqrt(dx**2 + dy**2)
+
+            if distance < AGENT_RADIUS:
+                # Edge case: agent center is fully inside obstacle
+                if distance == 0:
+                    self.y -= AGENT_RADIUS
+                    self.vy *= -1
+                    continue
+
+                # Collision normal: direction to push agent out
+                nx = dx / distance
+                ny = dy / distance
+
+                # Push agent out so it sits exactly on the surface
+                self.x = closest_x + nx * AGENT_RADIUS
+                self.y = closest_y + ny * AGENT_RADIUS
+
+                # Reflect velocity along the normal
+                dot = self.vx * nx + self.vy * ny
+                self.vx -= 2 * dot * nx
+                self.vy -= 2 * dot * ny
+        
 
 
     def __repr__(self):

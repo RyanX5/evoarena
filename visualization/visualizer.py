@@ -56,6 +56,17 @@ class Visualizer:
     def draw(self):
         self.screen.fill(BG_COLOR)
 
+        # finding the "alpha"
+        best_agent = None
+        max_fitness = -float('inf')
+        
+        if self.arena.agents:
+            for agent in self.arena.agents:
+                f = agent.fitness()
+                if f > max_fitness:
+                    max_fitness = f
+                    best_agent = agent
+
         # Obstacles
         for obs in self.arena.obstacles:
             rect = pygame.Rect(obs.x, obs.y, obs.width, obs.height)
@@ -74,9 +85,23 @@ class Visualizer:
             bar_fill_color = (0, 200, 0) # Green
 
             cx, cy = int(agent.x), int(agent.y)
-            pygame.draw.circle(self.screen, AGENT_COLOR, (cx, cy), AGENT_RADIUS)
+            
+            # Draw the alpha ring and determine agent color
+            if agent == best_agent:
+                # Draw gold ring first so it is behind the health bar but visible around the agent
+                pygame.draw.circle(self.screen, (255, 215, 0), (cx, cy), AGENT_RADIUS + 4, 3)
+                current_agent_color = (255, 255, 100)
+            else:
+                current_agent_color = AGENT_COLOR
+
+            # Draw agent body
+            pygame.draw.circle(self.screen, current_agent_color, (cx, cy), AGENT_RADIUS)
             pygame.draw.circle(self.screen, AGENT_OUTLINE, (cx, cy), AGENT_RADIUS, 1)
+            
+            # Draw health bar background
             pygame.draw.rect(self.screen, bar_color, (bar_x, bar_y, bar_width, bar_height))
+            
+            # Draw ID label
             label = self.small_font.render(str(agent.id), True, (20, 20, 20))
             self.screen.blit(label, (cx - 4, cy - 5))
 
@@ -86,19 +111,27 @@ class Visualizer:
 
         # HUD
         hud_y = self.arena.height + 8
-        hud = f"Step: {self.arena.step_count}   Agents: {len(self.arena.agents)}    Gen: {Arena._gen_count}"
+        best_fit_val = f"{max_fitness:.1f}" if best_agent else "0.0"
+        hud = f"Step: {self.arena.step_count}   Agents: {len(self.arena.agents)}    Gen: {Arena._gen_count}    Best Fit: {best_fit_val}"
         self.screen.blit(self.font.render(hud, True, HUD_COLOR), (10, hud_y))
 
         pygame.display.flip()
         self.clock.tick(self.fps)
 
     def close(self):
-        max_fitness_score = 0.0
+        max_fitness_score = -float('inf')
         max_score_agent = None
-        for agent in self.arena.agents:
-            curr_fitness = agent.fitness()
-            if curr_fitness > max_fitness_score:
-                max_fitness_score = curr_fitness
-                max_score_agent = agent
-        print(f"Max fitness score: {max_fitness_score} by Agent id: {max_score_agent.id}")
+        
+        if self.arena.agents:
+            for agent in self.arena.agents:
+                curr_fitness = agent.fitness()
+                if curr_fitness > max_fitness_score:
+                    max_fitness_score = curr_fitness
+                    max_score_agent = agent
+            
+            if max_score_agent:
+                print(f"Max fitness score: {max_fitness_score:.2f} by Agent id: {max_score_agent.id}")
+        else:
+            print("No agents remaining in the arena.")
+            
         pygame.quit()

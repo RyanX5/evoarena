@@ -62,6 +62,7 @@ class Arena:
         for agent in self.agents:
             agent.decide(self.agents, self.width, self.height)
             agent.move(self.width, self.height)
+            agent.handle_obstacles(self.obstacles)
 
         # Adding steps_alive to track fitness score
         for agent in self.agents:
