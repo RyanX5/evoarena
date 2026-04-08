@@ -34,6 +34,7 @@ class Visualizer:
         self.clock = None
         self.font = None
         self.small_font = None
+        self.pinned_champion_id = None  # when set, always highlights this agent
 
     def init(self):
         pygame.init()
@@ -56,11 +57,17 @@ class Visualizer:
     def draw(self):
         self.screen.fill(BG_COLOR)
 
-        # finding the "alpha"
+        # finding the "alpha" — pinned to champion in replay mode, otherwise highest fitness
         best_agent = None
         max_fitness = -float('inf')
-        
-        if self.arena.agents:
+
+        if self.pinned_champion_id is not None:
+            for agent in self.arena.agents:
+                if agent.id == self.pinned_champion_id:
+                    best_agent = agent
+                    max_fitness = agent.fitness()
+                    break
+        elif self.arena.agents:
             for agent in self.arena.agents:
                 f = agent.fitness()
                 if f > max_fitness:

@@ -1,0 +1,21 @@
+# Assignment/report documents
+docs/
+
+# Saved champion weights
+champions/
+
+# Sweep raw data (keep PNGs for reports)
+experiments/results/*.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Virtual environments
+venv/
+.env/
+
+# VS Code
+.vscode/
