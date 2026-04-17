@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EvoArena</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>EvoArena</h1>
+    <span class="subtitle">Neural network agents evolving combat strategies in real time</span>
+    <div id="conn-badge" class="badge disconnected">Connecting…</div>
+  </header>
+
+  <main>
+    <!-- ── Arena canvas + HUD ── -->
+    <section class="arena-section">
+      <div class="canvas-wrapper">
+        <canvas id="arena" width="800" height="600"></canvas>
+        <div id="overlay" class="overlay">
+          <div class="overlay-text">Stopped</div>
+        </div>
+      </div>
+
+      <div class="hud">
+        <div class="hud-item"><span class="hud-label">Gen</span><span class="hud-val" id="h-gen">—</span></div>
+        <div class="hud-item"><span class="hud-label">Step</span><span class="hud-val" id="h-step">—</span></div>
+        <div class="hud-item"><span class="hud-label">Agents</span><span class="hud-val" id="h-agents">—</span></div>
+        <div class="hud-item"><span class="hud-label">Best Fit</span><span class="hud-val" id="h-best">—</span></div>
+        <div class="hud-item"><span class="hud-label">Avg Fit</span><span class="hud-val" id="h-avg">—</span></div>
+      </div>
+    </section>
+
+    <!-- ── Controls sidebar ── -->
+    <aside class="controls">
+      <button id="btn-startstop" class="btn-primary" disabled>Start</button>
+
+      <div class="divider"></div>
+
+      <div class="param-group">
+        <label class="param-label">
+          Population Size
+          <span class="param-val" id="val-pop">30</span>
+        </label>
+        <input type="range" id="sl-pop" min="10" max="80" step="5" value="30" />
+        <div class="param-hint">Agents per generation</div>
+      </div>
+
+      <div class="param-group">
+        <label class="param-label">
+          Mutation Rate (σ)
+          <span class="param-val" id="val-mut">0.10</span>
+        </label>
+        <input type="range" id="sl-mut" min="1" max="50" step="1" value="10" />
+        <div class="param-hint">Gaussian noise on weights</div>
+      </div>
+
+      <div class="param-group">
+        <label class="param-label">
+          Elite %
+          <span class="param-val" id="val-elite">20%</span>
+        </label>
+        <input type="range" id="sl-elite" min="5" max="50" step="5" value="20" />
+        <div class="param-hint">Top survivors that reproduce</div>
+      </div>
+
+      <p class="change-note">Changes take effect next generation.</p>
+
+      <div class="divider"></div>
+
+      <div class="legend">
+        <div class="legend-item"><span class="dot alpha"></span>Alpha agent (highest fitness)</div>
+        <div class="legend-item"><span class="dot normal"></span>Normal agent</div>
+        <div class="legend-item"><span class="block obs"></span>Obstacle</div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ── Fitness graph ── -->
+  <section class="graph-section">
+    <div class="graph-header">
+      <span class="graph-title">Fitness over Generations</span>
+      <div class="graph-legend">
+        <span class="gl-item gold">■ Best</span>
+        <span class="gl-item cyan">■ Avg</span>
+      </div>
+    </div>
+    <canvas id="graph" width="1000" height="200"></canvas>
+  </section>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

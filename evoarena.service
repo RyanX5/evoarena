@@ -1,0 +1,14 @@
+[Unit]
+Description=EvoArena Web Server
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/evoarena
+ExecStart=/usr/bin/python3 -m uvicorn web.server:app --host 127.0.0.1 --port 8000
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
