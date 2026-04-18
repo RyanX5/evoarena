@@ -1,3 +1,13 @@
+# Claude Code
+CLAUDE.md
+.claude/
+
+# macOS
+.DS_Store
+
+# Generated files
+fitness.png
+
 # Saved champion weights
 champions/
 

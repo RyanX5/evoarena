@@ -38,29 +38,15 @@ The simulation runs locally (either in a Pygame window or headless from the comm
 
 ### 2.1 Overall Architecture
 
-The project is split into three layers: the simulation core, the evolution engine, and the frontend (either local Pygame or the web client). The key design decision made early on was to keep the simulation completely independent of any rendering code. The arena and agents have no knowledge of Pygame or any display library - they just run the physics and return state.
+The key design decision made early on was to keep the simulation completely independent of any rendering code. The arena and agents have no knowledge of Pygame or any display library - they just run physics and return state. The project has three main layers:
 
-```
-+-----------------------------------------------------+
-|                   Simulation Core                   |
-|   simulation/arena.py   simulation/agent.py         |
-|   simulation/neural_network.py   config.py          |
-+------------------------+----------------------------+
-                         | agent state, fitness
-           +-------------+--------------+
-           |                            |
-+----------v---------+    +-------------v-----------+
-|   Local Frontend   |    |    Web Frontend         |
-|  visualization/    |    |  web/server.py (FastAPI)|
-|  visualizer.py     |    |  WebSocket -> JSON      |
-|  fitness_graph.py  |    |  web/static/app.js      |
-+--------------------+    |  HTML Canvas renderer   |
-                          +-------------------------+
-           +------------------------------+
-           |     Evolution Engine         |
-           |   evolution/evolve.py        |
-           +------------------------------+
-```
+**Simulation core** (`simulation/`, `config.py`) - the arena, agents, and neural networks. This layer has no rendering dependency at all; it just runs physics and returns state each step.
+
+**Frontends** - two separate options that both plug into the same core:
+- Local: `visualization/visualizer.py` (Pygame window) and `visualization/fitness_graph.py` (matplotlib PNG)
+- Web: `web/server.py` (FastAPI + WebSocket) streams agent state to `web/static/app.js`, which renders on a browser Canvas
+
+**Evolution engine** (`evolution/evolve.py`) - runs between generations. Takes the surviving agent pool, applies selection, crossover, and mutation, and returns the next population.
 
 This separation paid off when building the web version: the entire web backend required zero changes to the simulation code. The same arena and agent classes that run in the Pygame window also run on the server, just with a WebSocket broadcaster instead of a renderer.
 
